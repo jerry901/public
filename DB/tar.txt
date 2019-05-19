@@ -1,0 +1,1 @@
+Makefile dbcreate.c dbcreate.h dbadd.c dbadd.h dbdelete.c dbdelete.h dblist.c dblist.h dbquery.c dbquery.h dbupdate.c dbupdate.h help.c help.h main.c main.h option.c option.h stud.txt student2.h

@@ -23,21 +23,20 @@ int dbadd(int argc, char *argv[])
         exit(2);
     }
 
-    lock.l_type = F_WRLCK;
-    lock.l_start = 0;
-    lock.l_whence = SEEK_SET;
-    lock.l_len = 0;
-    lock.l_pid = getpid();
-
-	if (fcntl(fd,F_SETLKW, &lock) == -1) {  /* 쓰기 잠금 */
-		perror("dbadd.c : fcntl returned -1");
-		exit(3);
-	}
-
     do {
         printf("데이터를 추가합니다.\n");
 		printf("%-9s %-8s %-4s", "학번",  "이름",  "점수\n");
         if (scanf("%d %s %d", &rec.id, rec.name, &rec.score) == 3) {
+			lock.l_type = F_WRLCK;
+			lock.l_whence = SEEK_SET;
+			lock.l_start = (rec.id-START_ID)*sizeof(rec);
+			lock.l_len = sizeof(rec);
+
+			if (fcntl(fd,F_SETLKW, &lock) == -1) {  /* 쓰기 잠금 */
+				perror("dbadd.c : fcntl returned -1");
+				exit(3);
+			}
+
             lseek(fd,  (long) (rec.id-START_ID)*sizeof(rec), SEEK_SET);
             if ((read(fd, &tmp, sizeof(tmp)) > 0) && ((tmp.id == 0) || (tmp.name[0] == '$'))) {
 				lseek(fd, (long) -sizeof(rec), SEEK_CUR);
